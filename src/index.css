@@ -10,6 +10,7 @@
   --surface-elevated: #1e1e21;
   --text-primary: #f0f0f2;
   --text-secondary: #8a8a8e;
+  --sage: #97A88A;
   --accent: #4a9e9e;
   --accent-glow: rgba(74, 158, 158, 0.15);
   --border: #2a2a2e;
@@ -20,12 +21,13 @@
    Tailwind Theme Extensions
    ────────────────────────────────────────────── */
 
-@theme inline {
+@theme {
   --color-bg-primary: var(--bg-primary);
   --color-surface: var(--surface);
   --color-surface-elevated: var(--surface-elevated);
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
+  --color-sage: var(--sage);
   --color-accent: var(--accent);
   --color-accent-glow: var(--accent-glow);
   --color-border: var(--border);
@@ -34,41 +36,61 @@
   --font-heading: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
   --font-body: "Inter", "system-ui", "-apple-system", "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+  --font-georgia: "Georgia", serif;
+  --font-lora: "Lora", "Georgia", serif;
 }
 
 /* ──────────────────────────────────────────────
    Base Styles
    ────────────────────────────────────────────── */
 
-html {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-body {
-  margin: 0;
-  font-family: var(--font-body);
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  line-height: 1.6;
-}
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+  }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
-  font-weight: 300;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-}
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 300;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
 
-code, pre, kbd {
-  font-family: var(--font-mono);
-}
+  code, pre, kbd {
+    font-family: var(--font-mono);
+  }
 
-*, *::before, *::after {
-  box-sizing: border-box;
-}
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
 
-::selection {
-  background-color: var(--accent);
-  color: var(--bg-primary);
+  ::selection {
+    background-color: var(--accent);
+    color: var(--bg-primary);
+  }
+
+  /* Low-profile scrollbar for logs and terminal readouts */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 0;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--color-sage);
+  }
 }
