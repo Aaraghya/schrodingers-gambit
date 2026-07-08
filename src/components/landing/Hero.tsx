@@ -3,27 +3,36 @@ import CTAButton from './CTAButton'
 
 function Hero() {
   return (
-    <section className="min-h-screen flex items-center justify-center px-6">
+    <section className="min-h-screen flex items-center justify-center px-8">
       <motion.div
-        className="text-center max-w-2xl"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 }}
+        className="text-center max-w-4xl flex flex-col items-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.0, ease: 'easeOut', delay: 0.2 }}
       >
-        <h1 className="font-heading text-5xl md:text-7xl lg:text-8xl font-extralight tracking-tight text-text-primary mb-6">
-          Quantum Chess
+        {/* Headline: The largest visual element, tight vertical rhythm, tight tracking */}
+        <h1 className="font-heading text-6xl md:text-8xl lg:text-[10rem] font-extralight tracking-tighter md:tracking-[-0.04em] text-text-primary leading-[0.9] select-none select-none">
+          Schrödinger's
+          <span className="block mt-2 md:mt-4 text-text-primary/95">Gambit</span>
         </h1>
 
-        <p className="font-heading text-lg md:text-xl font-light text-text-secondary tracking-wide mb-4">
-          Every move exists until observed.
-        </p>
+        {/* Generous spacing before CTA */}
+        <div className="my-16 md:my-20">
+          <CTAButton>Begin Experiment</CTAButton>
+        </div>
 
-        <p className="font-body text-sm text-text-secondary/70 max-w-md mx-auto mb-12 leading-relaxed">
-          A premium reimagining of classical chess inspired by quantum
-          superposition.
-        </p>
+        {/* Bottom Legends (Subtitle + Supporting copy) */}
+        <div className="flex flex-col items-center max-w-md">
+          {/* Subtitle */}
+          <p className="font-heading text-[13px] md:text-sm font-light text-text-secondary tracking-[0.25em] uppercase mb-4 opacity-80">
+            Every move exists until observed.
+          </p>
 
-        <CTAButton>Begin Experiment</CTAButton>
+          {/* Supporting Copy */}
+          <p className="font-body text-[11px] md:text-xs text-text-secondary/50 leading-relaxed uppercase tracking-wider">
+            A premium reimagining of classical chess inspired by quantum superposition.
+          </p>
+        </div>
       </motion.div>
     </section>
   )
