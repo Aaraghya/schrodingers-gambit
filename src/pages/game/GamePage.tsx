@@ -8,7 +8,14 @@ import OperationalLogPanel from '../../features/chess/components/OperationalLogP
 import { useChessGame } from '../../features/hooks/useChessGame'
 
 export const GamePage: React.FC = () => {
-  const { board } = useChessGame()
+  const { 
+    board,
+    selectedSquare,
+    legalMoves,
+    lastMove,
+    selectSquare,
+    turn
+  } = useChessGame()
 
   return (
     <motion.div
@@ -36,18 +43,26 @@ export const GamePage: React.FC = () => {
               {/* Telemetry Status Bar */}
               <div className="w-full flex items-center justify-between px-4 py-2.5 border border-border/30 bg-[#0c0c0d] font-mono select-none">
                 <div className="flex items-center gap-2">
-                  <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+                  <span className={`h-1.5 w-1.5 rounded-full ${turn === 'w' ? 'bg-success' : 'bg-accent'} animate-pulse`} />
                   <span className="text-[8px] sm:text-[9px] text-text-secondary/50 tracking-[0.15em] uppercase">SYSTEM STATE</span>
                 </div>
                 <span className="text-[9px] sm:text-[10px] text-sage font-bold tracking-[0.2em] uppercase animate-pulse">
-                  Observation Pending
+                  {turn === 'w' ? 'QUANTUM MOVE AVAILABLE' : 'OBSERVATION PENDING'}
                 </span>
-                <span className="text-[8px] sm:text-[9px] text-text-secondary/30 tracking-wider">REF_FIELD: SG_CHESS</span>
+                <span className="text-[8px] sm:text-[9px] text-text-secondary/30 tracking-wider uppercase">
+                  {turn === 'w' ? 'WHITE TURN' : 'BLACK TURN'}
+                </span>
               </div>
 
               {/* Chessboard Component */}
               <div className="w-full">
-                <ChessBoard board={board} />
+                <ChessBoard 
+                  board={board}
+                  selectedSquare={selectedSquare}
+                  legalMoves={legalMoves}
+                  lastMove={lastMove}
+                  onSquareClick={selectSquare}
+                />
               </div>
 
             </div>

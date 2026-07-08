@@ -8,9 +8,19 @@ const ranks = ['8', '7', '6', '5', '4', '3', '2', '1']
 
 interface ChessBoardProps {
   board: BoardState
+  selectedSquare: string | null
+  legalMoves: string[]
+  lastMove: { from: string; to: string } | null
+  onSquareClick: (square: string) => void
 }
 
-export const ChessBoard: React.FC<ChessBoardProps> = ({ board }) => {
+export const ChessBoard: React.FC<ChessBoardProps> = ({ 
+  board,
+  selectedSquare,
+  legalMoves,
+  lastMove,
+  onSquareClick
+}) => {
   return (
     <div className="relative w-full aspect-square p-6 border border-border/30 bg-[#0c0c0d] shadow-[0_0_32px_rgba(0,0,0,0.65)] select-none">
       {/* Editorial Ranks and Files Labels */}
@@ -22,12 +32,22 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({ board }) => {
           row.map((piece, cIdx) => {
             const coordinate = files[cIdx] + ranks[rIdx]
             const isDark = (rIdx + cIdx) % 2 === 1
+            const isSelected = selectedSquare === coordinate
+            const isLegalDestination = legalMoves.includes(coordinate)
+            const isLastMovePart = lastMove 
+              ? (lastMove.from === coordinate || lastMove.to === coordinate)
+              : false
+
             return (
               <Square
                 key={coordinate}
                 coordinate={coordinate}
                 isDark={isDark}
                 piece={piece}
+                isSelected={isSelected}
+                isLegalDestination={isLegalDestination}
+                isLastMovePart={isLastMovePart}
+                onClick={() => onSquareClick(coordinate)}
               />
             )
           })

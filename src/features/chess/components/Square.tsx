@@ -6,9 +6,21 @@ interface SquareProps {
   coordinate: string
   isDark: boolean
   piece: PieceInfo | null
+  isSelected: boolean
+  isLegalDestination: boolean
+  isLastMovePart: boolean
+  onClick: () => void
 }
 
-export const Square: React.FC<SquareProps> = ({ coordinate, isDark, piece }) => {
+export const Square: React.FC<SquareProps> = ({ 
+  coordinate, 
+  isDark, 
+  piece,
+  isSelected,
+  isLegalDestination,
+  isLastMovePart,
+  onClick
+}) => {
   // Editorial palette for a premium scientific appearance (avoiding traditional browns)
   // Dark squares: Deep charcoal
   // Light squares: Muted warm stone / gray
@@ -23,6 +35,7 @@ export const Square: React.FC<SquareProps> = ({ coordinate, isDark, piece }) => 
   return (
     <button
       type="button"
+      onClick={onClick}
       aria-label={ariaLabel}
       className={`relative w-full aspect-square flex items-center justify-center transition-colors duration-200 outline-none focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-sage focus-visible:z-10 ${bgClass} group rounded-none cursor-pointer overflow-hidden`}
     >
@@ -31,6 +44,27 @@ export const Square: React.FC<SquareProps> = ({ coordinate, isDark, piece }) => 
 
       {/* Premium subtle hover overlay */}
       <span className="absolute inset-0 bg-white/0 hover:bg-white/5 transition-colors duration-150 pointer-events-none" />
+
+      {/* Last Move Tint Overlay */}
+      {isLastMovePart && (
+        <span className="absolute inset-0 bg-sage/[0.08] pointer-events-none" />
+      )}
+
+      {/* Selection Border Overlay: subtle sage outline */}
+      {isSelected && (
+        <span className="absolute inset-0 border-2 border-sage z-10 pointer-events-none" />
+      )}
+
+      {/* Legal Move Indicator */}
+      {isLegalDestination && (
+        piece ? (
+          // Capture target: subtle outer ring around the piece
+          <span className="absolute inset-1.5 border border-sage/50 rounded-full pointer-events-none z-10" />
+        ) : (
+          // Empty cell target: small centered dot
+          <span className="w-2 h-2 rounded-full bg-sage/60 pointer-events-none z-10" />
+        )
+      )}
 
       {/* Render the piece if present */}
       {piece && (
