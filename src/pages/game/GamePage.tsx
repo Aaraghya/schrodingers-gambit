@@ -5,8 +5,11 @@ import BackgroundGrid from '../../components/landing/BackgroundGrid'
 import { ChessBoard } from '../../features/chess/components/ChessBoard'
 import QuantumStatusPanel from '../../features/chess/components/QuantumStatusPanel'
 import OperationalLogPanel from '../../features/chess/components/OperationalLogPanel'
+import { useChessGame } from '../../features/hooks/useChessGame'
 
 export const GamePage: React.FC = () => {
+  const { board } = useChessGame()
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -44,7 +47,7 @@ export const GamePage: React.FC = () => {
 
               {/* Chessboard Component */}
               <div className="w-full">
-                <ChessBoard />
+                <ChessBoard board={board} />
               </div>
 
             </div>
