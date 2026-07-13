@@ -94,3 +94,38 @@
     background: var(--color-sage);
   }
 }
+
+/* ──────────────────────────────────────────────
+   Quantum Animation Keyframes
+   ────────────────────────────────────────────── */
+
+@keyframes quantum-fade-in {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+  }
+  to {
+    opacity: 0.5;
+    filter: blur(1px);
+  }
+}
+
+@keyframes quantum-fade-out {
+  from {
+    opacity: 1;
+    filter: blur(0px);
+  }
+  to {
+    opacity: 0;
+    filter: blur(4px);
+  }
+}
+
+.animate-quantum-fade-in {
+  animation: quantum-fade-in 180ms ease-out forwards;
+}
+
+.animate-quantum-fade-out {
+  animation: quantum-fade-out 180ms ease-out forwards;
+}
+

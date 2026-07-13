@@ -34,23 +34,100 @@ export class ChessEngine {
 
   /**
    * Attempts to execute a move from start to target.
-   * Promotes pawns reaching the back ranks to Queen by default.
+   * Promotion piece is passed optionally (Q, R, B, N).
    */
-  public move(from: string, to: string): boolean {
+  public move(from: string, to: string, promotion?: 'q' | 'r' | 'b' | 'n'): boolean {
     try {
-      const piece = this.instance.get(from as Square)
-      const isPawn = piece && piece.type === 'p'
-      const isPromotionRank = to.endsWith('8') || to.endsWith('1')
-      
-      const moveConfig = isPawn && isPromotionRank 
-        ? { from: from as Square, to: to as Square, promotion: 'q' }
-        : { from: from as Square, to: to as Square }
-
-      this.instance.move(moveConfig)
+      this.instance.move({
+        from: from as Square,
+        to: to as Square,
+        promotion: promotion
+      })
       return true
     } catch {
       return false
     }
+  }
+
+  /**
+   * Resets the chess game to the initial starting position.
+   */
+  public reset(): void {
+    this.instance.reset()
+  }
+
+  /**
+   * Returns whether the active player is in check.
+   */
+  public inCheck(): boolean {
+    return this.instance.inCheck()
+  }
+
+  /**
+   * Returns whether the active position is checkmate.
+   */
+  public isCheckmate(): boolean {
+    return this.instance.isCheckmate()
+  }
+
+  /**
+   * Returns whether the active position is stalemate.
+   */
+  public isStalemate(): boolean {
+    return this.instance.isStalemate()
+  }
+
+  /**
+   * Returns whether the current game is drawn (stalemate, threefold repetition, 50-move rule, etc.).
+   */
+  public isDraw(): boolean {
+    return this.instance.isDraw()
+  }
+
+  /**
+   * Returns whether the game is drawn specifically by threefold repetition.
+   */
+  public isThreefoldRepetition(): boolean {
+    return this.instance.isThreefoldRepetition()
+  }
+
+  /**
+   * Returns whether the game is drawn specifically by insufficient material.
+   */
+  public isInsufficientMaterial(): boolean {
+    return this.instance.isInsufficientMaterial()
+  }
+
+  /**
+   * Returns whether the game is drawn specifically by fifty-move rule.
+   */
+  public isFiftyMoves(): boolean {
+    // chess.js 1.0.0+ exposes isDraw() which includes 50-move rule internally.
+    // In chess.js, we can also inspect the halfmove clock via FEN.
+    return this.instance.isDraw() && !this.instance.isStalemate() && !this.instance.isThreefoldRepetition() && !this.instance.isInsufficientMaterial()
+  }
+
+  /**
+   * Retrieves the history of executed moves in standard algebraic notation (SAN).
+   */
+  public getHistory(): string[] {
+    return this.instance.history()
+  }
+
+  /**
+   * Finds the coordinate square of the King for the specified color.
+   */
+  public getKingSquare(color: 'w' | 'b'): string | null {
+    const board = this.instance.board()
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const cell = board[r][c]
+        if (cell && cell.type === 'k' && cell.color === color) {
+          return cell.square
+        }
+      }
+    }
+    return null
   }
 
   /**

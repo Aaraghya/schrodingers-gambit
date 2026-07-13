@@ -1,15 +1,27 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 
-export const OperationalLogPanel: React.FC = () => {
-  // Mock move history log entries
-  const logEntries = [
-    { num: '01', white: '♙ e2-e4', black: '♞ b8-c6', type: 'QUANTUM' },
-    { num: '02', white: '♘ g1-f3', black: '♟ e7-e5', type: 'CLASSICAL' },
-    { num: '03', white: '♗ f1-c4', black: '♞ g8-f6', type: 'CLASSICAL' },
-    { num: '04', white: '♙ d2-d3', black: '♝ f8-c5', type: 'CLASSICAL' },
-    { num: '05', white: 'O-O', black: 'O-O', type: 'CLASSICAL' },
-  ]
+interface OperationalLogPanelProps {
+  history: string[]
+  onResetGame: () => void
+  onAbortTest: () => void
+  onClearSelection?: () => void
+}
+
+export const OperationalLogPanel: React.FC<OperationalLogPanelProps> = ({
+  history,
+  onResetGame,
+  onAbortTest,
+  onClearSelection
+}) => {
+  // Map flat SAN moves list into paired rounds (e.g. White move, Black move)
+  const logEntries = []
+  for (let i = 0; i < history.length; i += 2) {
+    const num = String(Math.floor(i / 2) + 1).padStart(2, '0')
+    const white = history[i]
+    const black = history[i + 1] || '...'
+    logEntries.push({ num, white, black, type: 'CLASSICAL' })
+  }
 
   return (
     <div className="flex flex-col h-full justify-between gap-6 py-2 text-right font-mono">
@@ -59,6 +71,7 @@ export const OperationalLogPanel: React.FC = () => {
           {/* Main action: Collapse */}
           <motion.button 
             type="button"
+            onClick={onClearSelection}
             className="w-full py-2.5 bg-bg-primary text-sage hover:text-text-primary border border-sage/40 hover:border-sage text-[10px] font-mono tracking-widest uppercase transition-all duration-200 hover:shadow-[0_0_16px_rgba(151,168,138,0.15)] cursor-pointer rounded-none outline-none focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-sage select-none"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -70,6 +83,7 @@ export const OperationalLogPanel: React.FC = () => {
           <div className="grid grid-cols-2 gap-2">
             <motion.button 
               type="button"
+              onClick={onResetGame}
               className="py-2 bg-bg-primary text-text-secondary/70 hover:text-text-primary border border-border/40 hover:border-border text-[9px] font-mono tracking-widest uppercase transition-all duration-200 cursor-pointer rounded-none outline-none focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-border select-none"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -79,6 +93,7 @@ export const OperationalLogPanel: React.FC = () => {
             </motion.button>
             <motion.button 
               type="button"
+              onClick={onAbortTest}
               className="py-2 bg-bg-primary text-text-secondary/70 hover:text-text-primary border border-border/40 hover:border-border text-[9px] font-mono tracking-widest uppercase transition-all duration-200 cursor-pointer rounded-none outline-none focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-border select-none"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
