@@ -8,6 +8,8 @@ export class QuantumEngine {
     this.state = this.initialState()
   }
 
+  private eventCounter = 0
+
   /**
    * Returns the initial clean quantum state.
    */
@@ -24,9 +26,24 @@ export class QuantumEngine {
 
   /**
    * Retrieves the current active quantum overlay, if any exists.
+   * Returns a deep copy to prevent mutation of the internal state.
    */
   public getCurrentOverlay(): QuantumOverlay | null {
-    return this.state.currentOverlay
+    const overlay = this.state.currentOverlay
+    if (!overlay) return null
+    return {
+      piece: { ...overlay.piece },
+      fromSquare: overlay.fromSquare,
+      squareA: overlay.squareA,
+      squareB: overlay.squareB
+    }
+  }
+
+  /**
+   * Checks if a quantum overlay is currently active.
+   */
+  public hasCurrentOverlay(): boolean {
+    return this.state.currentOverlay !== null
   }
 
   /**
@@ -60,26 +77,6 @@ export class QuantumEngine {
   }
 
   /**
-   * Validates if a Quantum Move (Split) can be performed.
-   * Enforces rules:
-   * 1. Only one active Quantum Overlay can exist on the board at a time.
-   * 2. The player must have their Quantum Move available.
-   * 3. The piece must have at least two distinct legal destination squares returned by chess.js.
-   */
-  public canPerformQuantumMove(
-    color: PieceColor,
-    fromSquare: string,
-    legalMovesForPiece: string[]
-  ): boolean {
-    // Scaffold: returns false by default, to be implemented in 4B
-    if (!fromSquare) return false
-    if (this.state.currentOverlay !== null) return false
-    if (this.hasUsedQuantumMove(color)) return false
-    if (legalMovesForPiece.length < 2) return false
-    return true
-  }
-
-  /**
    * Registers a new Quantum Overlay on the board and marks the player's quantum move as used.
    */
   public registerQuantumOverlay(
@@ -88,9 +85,8 @@ export class QuantumEngine {
     squareA: string,
     squareB: string
   ): void {
-    // Scaffold: to be fully integrated in 4B
     this.state.currentOverlay = {
-      piece,
+      piece: { ...piece },
       fromSquare,
       squareA,
       squareB
@@ -100,38 +96,58 @@ export class QuantumEngine {
 
   /**
    * Resolves the active superposition by collapsing it to either squareA or squareB (50/50).
-   * Generates a MeasurementEvent and adds it to history.
+   * Generates an immutable MeasurementEvent and adds it to history.
    * Returns the square that the piece collapsed to.
+   * Returns null if no overlay is active.
    */
   public triggerCollapse(trigger: 'capture' | 'move'): string | null {
     const overlay = this.state.currentOverlay
     if (!overlay) return null
 
-    // Scaffold: to be fully implemented with randomness/outcome in 4B.
-    // For scaffolding, we just return squareA as a dummy outcome.
-    const collapsedSquare = overlay.squareA
+    // Perform a true 50/50 random choice between squareA and squareB
+    const collapsedSquare = Math.random() < 0.5 ? overlay.squareA : overlay.squareB
+
+    // Generate unique ID: prefer crypto.randomUUID() if supported, otherwise deterministic fallback
+    let eventId: string
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      eventId = crypto.randomUUID()
+    } else {
+      eventId = `measure-${overlay.piece.id}-${trigger}-${this.eventCounter++}`
+    }
 
     const event: MeasurementEvent = {
-      id: `measure-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+      id: eventId,
       timestamp: Date.now(),
       trigger,
-      piece: overlay.piece,
+      piece: { ...overlay.piece },
       squareA: overlay.squareA,
       squareB: overlay.squareB,
       collapsedSquare
     }
 
+    // Append to measurementHistory
     this.state.measurementHistory.push(event)
-    this.state.currentOverlay = null // Collapse removes the overlay
+
+    // Clear currentOverlay
+    this.state.currentOverlay = null
 
     return collapsedSquare
   }
 
   /**
    * Retrieves all logged measurement events.
+   * Returns a deep copy to prevent mutation of the internal state.
    */
   public getMeasurementHistory(): MeasurementEvent[] {
-    return this.state.measurementHistory
+    return this.state.measurementHistory.map(event => ({
+      id: event.id,
+      timestamp: event.timestamp,
+      trigger: event.trigger,
+      piece: { ...event.piece },
+      squareA: event.squareA,
+      squareB: event.squareB,
+      collapsedSquare: event.collapsedSquare
+    }))
   }
 
   /**
@@ -139,5 +155,7 @@ export class QuantumEngine {
    */
   public reset(): void {
     this.state = this.initialState()
+    this.eventCounter = 0
   }
 }
+

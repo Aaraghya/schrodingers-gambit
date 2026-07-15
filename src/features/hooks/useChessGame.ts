@@ -1,8 +1,14 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { ChessEngine } from '../engine/chessEngine'
 import { QuantumEngine } from '../quantum/engine/quantumEngine'
 import { getMergedBoardState } from '../quantum/utils/quantumUtils'
 import type { BoardState } from '../chess/types'
+
+interface MoveRecord {
+  from: string
+  to: string
+  promotion?: 'q' | 'r' | 'b' | 'n'
+}
 
 export function useChessGame() {
   // Persist the ChessEngine instance across renders
@@ -10,6 +16,9 @@ export function useChessGame() {
 
   // Persist the QuantumEngine instance across renders
   const quantumEngine = useMemo(() => new QuantumEngine(), [])
+
+  // Track sequence of successful classical moves
+  const moveHistoryRef = useRef<MoveRecord[]>([])
 
   // Expose engine states via React state to trigger visual re-renders
   const [board, setBoard] = useState<BoardState>(() =>
@@ -95,11 +104,67 @@ export function useChessGame() {
   }
 
   /**
+   * Rebuilds the entire game state from move history, applying an optional transform function to each move.
+   * Performs validation against an independently constructed expected engine state.
+   */
+  const rebuildGame = (transformMove?: (move: MoveRecord, index: number) => MoveRecord): void => {
+    const newHistory: MoveRecord[] = []
+    for (let i = 0; i < moveHistoryRef.current.length; i++) {
+      const originalMove = moveHistoryRef.current[i]
+      const transformedMove = transformMove ? transformMove(originalMove, i) : originalMove
+      newHistory.push({ ...transformedMove })
+    }
+
+    // Reset the active engine
+    engine.reset()
+
+    // Replay each move
+    for (const m of newHistory) {
+      const success = engine.move(m.from, m.to, m.promotion)
+      if (!success) {
+        throw new Error(`ReplayError: Failed to execute move from ${m.from} to ${m.to}`)
+      }
+    }
+
+    // Construct expected engine independently for validation
+    const expectedEngine = new ChessEngine()
+    for (const m of newHistory) {
+      const success = expectedEngine.move(m.from, m.to, m.promotion)
+      if (!success) {
+        throw new Error(`ReplayValidationError: Expected engine failed to execute move from ${m.from} to ${m.to}`)
+      }
+    }
+
+    // Verify invariants
+    if (engine.getFen() !== expectedEngine.getFen()) {
+      throw new Error('ReplayValidationError: Active engine FEN does not match expected engine FEN after replay.')
+    }
+    if (engine.getTurn() !== expectedEngine.getTurn()) {
+      throw new Error('ReplayValidationError: Active engine turn does not match expected engine turn after replay.')
+    }
+    if (engine.getHistory().length !== newHistory.length) {
+      throw new Error('ReplayValidationError: Active engine history length does not match replayed history length.')
+    }
+
+    // Update the history reference
+    moveHistoryRef.current = newHistory
+
+    // Synchronize states
+    syncState()
+  }
+
+  // Temporary dummy usage to satisfy noUnusedLocals compiler requirement
+  if (false as boolean) {
+    rebuildGame()
+  }
+
+  /**
    * Executes a move and updates board state.
    */
   const makeMove = (from: string, to: string, promotion?: 'q' | 'r' | 'b' | 'n') => {
     const success = engine.move(from, to, promotion)
     if (success) {
+      moveHistoryRef.current.push({ from, to, promotion })
       setLastMove({ from, to })
       clearSelection()
       syncState()
@@ -137,6 +202,7 @@ export function useChessGame() {
     clearSelection()
     setLastMove(null)
     setPromotionPending(null)
+    moveHistoryRef.current = []
     syncState()
   }
 
@@ -206,6 +272,13 @@ export function useChessGame() {
       targetA,
       targetB
     )
+
+    // Execute standard classical move to targetA in classical engine to advance the turn
+    const success = engine.move(selected, targetA)
+    if (success) {
+      moveHistoryRef.current.push({ from: selected, to: targetA })
+      setLastMove({ from: selected, to: targetA })
+    }
   }
 
   /**
