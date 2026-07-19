@@ -26,7 +26,6 @@ export const GamePage: React.FC = () => {
     kingInCheckSquare,
     promotePawn,
     cancelPromotion,
-    clearSelection,
     resetGame,
     isQuantumModeActive,
     quantumModeError,
@@ -34,7 +33,8 @@ export const GamePage: React.FC = () => {
     secondTarget,
     currentOverlay,
     hasUsedQuantumMove,
-    toggleQuantumMode
+    toggleQuantumMode,
+    triggerManualCollapse
   } = useChessGame()
 
   const onReturnHome = () => {
@@ -158,7 +158,7 @@ export const GamePage: React.FC = () => {
               history={history}
               onResetGame={resetGame}
               onAbortTest={onReturnHome}
-              onClearSelection={clearSelection}
+              onClearSelection={triggerManualCollapse}
             />
           </div>
 

@@ -3,6 +3,7 @@ import { ChessEngine } from '../engine/chessEngine'
 import { QuantumEngine } from '../quantum/engine/quantumEngine'
 import { getMergedBoardState } from '../quantum/utils/quantumUtils'
 import type { BoardState } from '../chess/types'
+import type { QuantumOverlay } from '../quantum/types/quantum'
 
 interface MoveRecord {
   from: string
@@ -104,6 +105,98 @@ export function useChessGame() {
   }
 
   /**
+   * Finds the index of the split move in history.
+   */
+  const findSplitMoveIndex = (overlay: QuantumOverlay): number => {
+    for (let i = moveHistoryRef.current.length - 1; i >= 0; i--) {
+      const m = moveHistoryRef.current[i]
+      if (m.from === overlay.fromSquare && m.to === overlay.squareA) {
+        return i
+      }
+    }
+    return -1
+  }
+
+  /**
+   * Retrieves the legal moves for a quantum piece's branch as if the piece collapsed to that branch.
+   */
+  const getLegalMovesForQuantumSquare = (square: string): string[] => {
+    const overlay = quantumEngine.getCurrentOverlay()
+    if (!overlay) return []
+
+    if (square === overlay.squareA) {
+      return engine.getLegalMovesForSquare(square)
+    }
+
+    if (square === overlay.squareB) {
+      const tempEngine = new ChessEngine()
+      const splitMoveIndex = findSplitMoveIndex(overlay)
+      if (splitMoveIndex !== -1) {
+        for (let i = 0; i < moveHistoryRef.current.length; i++) {
+          const m = moveHistoryRef.current[i]
+          if (i === splitMoveIndex) {
+            tempEngine.move(m.from, overlay.squareB, m.promotion)
+          } else {
+            tempEngine.move(m.from, m.to, m.promotion)
+          }
+        }
+        return tempEngine.getLegalMovesForSquare(square)
+      }
+    }
+
+    return []
+  }
+
+  /**
+   * Computes the legal moves for any square, accounting for normal moves, quantum piece moves,
+   * and quantum captures using temporary engines.
+   */
+  const getLegalMovesForSquareCombined = (square: string): string[] => {
+    const overlay = quantumEngine.getCurrentOverlay()
+    if (!overlay) {
+      return engine.getLegalMovesForSquare(square)
+    }
+
+    // Moving the quantum piece itself
+    if (square === overlay.squareA || square === overlay.squareB) {
+      return getLegalMovesForQuantumSquare(square)
+    }
+
+    // Normal legal moves
+    const normalMoves = engine.getLegalMovesForSquare(square)
+
+    // Capturing the quantum piece
+    if (turn !== overlay.piece.color) {
+      const extraMoves: string[] = []
+
+      // In the current active engine, the quantum piece is at squareA.
+      // So engine.getLegalMovesForSquare(square) already includes squareA if it can be captured.
+      // We only need to check squareB using a temporary engine where the split resolved to squareB.
+      const tempEngine = new ChessEngine()
+      const splitMoveIndex = findSplitMoveIndex(overlay)
+      if (splitMoveIndex !== -1) {
+        for (let i = 0; i < moveHistoryRef.current.length; i++) {
+          const m = moveHistoryRef.current[i]
+          if (i === splitMoveIndex) {
+            tempEngine.move(m.from, overlay.squareB, m.promotion)
+          } else {
+            tempEngine.move(m.from, m.to, m.promotion)
+          }
+        }
+
+        const tempMoves = tempEngine.getLegalMovesForSquare(square)
+        if (tempMoves.includes(overlay.squareB)) {
+          extraMoves.push(overlay.squareB)
+        }
+      }
+
+      return Array.from(new Set([...normalMoves, ...extraMoves]))
+    }
+
+    return normalMoves
+  }
+
+  /**
    * Rebuilds the entire game state from move history, applying an optional transform function to each move.
    * Performs validation against an independently constructed expected engine state.
    */
@@ -153,15 +246,95 @@ export function useChessGame() {
     syncState()
   }
 
-  // Temporary dummy usage to satisfy noUnusedLocals compiler requirement
-  if (false as boolean) {
-    rebuildGame()
-  }
-
   /**
    * Executes a move and updates board state.
    */
   const makeMove = (from: string, to: string, promotion?: 'q' | 'r' | 'b' | 'n') => {
+    const overlay = quantumEngine.getCurrentOverlay()
+    if (!overlay) {
+      // Normal move
+      const success = engine.move(from, to, promotion)
+      if (success) {
+        moveHistoryRef.current.push({ from, to, promotion })
+        setLastMove({ from, to })
+        clearSelection()
+        syncState()
+      }
+      return
+    }
+
+    const splitMoveIndex = findSplitMoveIndex(overlay)
+    if (splitMoveIndex === -1) {
+      // Fallback if split move not found in history, though it should always be
+      const success = engine.move(from, to, promotion)
+      if (success) {
+        moveHistoryRef.current.push({ from, to, promotion })
+        setLastMove({ from, to })
+        clearSelection()
+        syncState()
+      }
+      return
+    }
+
+    // Trigger B: Moving the quantum piece itself
+    // If the player attempts to move either rendered branch
+    if (from === overlay.squareA || from === overlay.squareB) {
+      const collapsedSquare = quantumEngine.triggerCollapse('move')
+      if (collapsedSquare) {
+        rebuildGame((move, index) => {
+          if (index === splitMoveIndex) {
+            return { ...move, to: collapsedSquare }
+          }
+          return move
+        })
+
+        // Attempt the requested move from the actual collapsed location
+        const success = engine.move(collapsedSquare, to, promotion)
+        if (success) {
+          moveHistoryRef.current.push({ from: collapsedSquare, to, promotion })
+          setLastMove({ from: collapsedSquare, to })
+        }
+        clearSelection()
+        syncState()
+      }
+      return
+    }
+
+    // Trigger A: Capturing a quantum piece
+    // If the move targets either branch of the current overlay
+    if (to === overlay.squareA || to === overlay.squareB) {
+      const collapsedSquare = quantumEngine.triggerCollapse('capture')
+      if (collapsedSquare) {
+        rebuildGame((move, index) => {
+          if (index === splitMoveIndex) {
+            return { ...move, to: collapsedSquare }
+          }
+          return move
+        })
+
+        // Capture only succeeds if collapse matches targeted branch, or if it is an en passant capture
+        const isEnPassant =
+          engine.getPiece(from)?.type === 'p' &&
+          to === overlay.squareA &&
+          collapsedSquare === overlay.squareB
+
+        let success = false
+        if (collapsedSquare === to || isEnPassant) {
+          success = engine.move(from, to, promotion)
+          if (success) {
+            moveHistoryRef.current.push({ from, to, promotion })
+            setLastMove({ from, to })
+          }
+        }
+        clearSelection()
+        syncState()
+      }
+      return
+    }
+
+    // Unrelated moves:
+    // If neither origin nor destination interacts with the overlay, execute normally.
+    // Overlay remains active.
     const success = engine.move(from, to, promotion)
     if (success) {
       moveHistoryRef.current.push({ from, to, promotion })
@@ -288,7 +461,16 @@ export function useChessGame() {
     // Block input if promotion modal is active
     if (promotionPending) return
 
-    const piece = engine.getPiece(square)
+    const overlay = quantumEngine.getCurrentOverlay()
+    let piece = engine.getPiece(square)
+
+    // Resolve quantum piece info if clicking on a branch of the overlay
+    if (overlay && (square === overlay.squareA || square === overlay.squareB)) {
+      piece = {
+        type: overlay.piece.type,
+        color: overlay.piece.color
+      }
+    }
 
     // Interactive targeting flow for Quantum Mode
     if (isQuantumModeActive) {
@@ -304,7 +486,7 @@ export function useChessGame() {
         setFirstTarget(null)
         setSecondTarget(null)
         setSelectedSquare(square)
-        setLegalMoves(engine.getLegalMovesForSquare(square))
+        setLegalMoves(getLegalMovesForSquareCombined(square))
         return
       }
 
@@ -342,7 +524,7 @@ export function useChessGame() {
     if (!selectedSquare) {
       if (piece && piece.color === turn) {
         setSelectedSquare(square)
-        setLegalMoves(engine.getLegalMovesForSquare(square))
+        setLegalMoves(getLegalMovesForSquareCombined(square))
       }
       return
     }
@@ -355,7 +537,13 @@ export function useChessGame() {
 
     // Case 3: Clicking a valid legal destination -> check for promotion or execute
     if (legalMoves.includes(square)) {
-      const selectedPiece = engine.getPiece(selectedSquare)
+      let selectedPiece = engine.getPiece(selectedSquare)
+      if (overlay && (selectedSquare === overlay.squareA || selectedSquare === overlay.squareB)) {
+        selectedPiece = {
+          type: overlay.piece.type,
+          color: overlay.piece.color
+        }
+      }
       const isPawn = selectedPiece && selectedPiece.type === 'p'
       const isPromotionRank = square.endsWith('8') || square.endsWith('1')
 
@@ -372,7 +560,7 @@ export function useChessGame() {
     // Case 4: Clicking another of our own pieces -> switch selection
     if (piece && piece.color === turn) {
       setSelectedSquare(square)
-      setLegalMoves(engine.getLegalMovesForSquare(square))
+      setLegalMoves(getLegalMovesForSquareCombined(square))
       return
     }
 
@@ -382,6 +570,29 @@ export function useChessGame() {
 
   // Get active King square in check (if any)
   const kingInCheckSquare = inCheck ? engine.getKingSquare(turn) : null
+
+  /**
+   * Developer debug tool to manually trigger a collapse of the active quantum overlay.
+   */
+  const triggerManualCollapse = () => {
+    const overlay = quantumEngine.getCurrentOverlay()
+    if (!overlay) return
+
+    const splitMoveIndex = findSplitMoveIndex(overlay)
+    if (splitMoveIndex === -1) return
+
+    const collapsedSquare = quantumEngine.triggerCollapse('move')
+    if (collapsedSquare) {
+      rebuildGame((move, index) => {
+        if (index === splitMoveIndex) {
+          return { ...move, to: collapsedSquare }
+        }
+        return move
+      })
+    }
+    clearSelection()
+    syncState()
+  }
 
   return {
     board,
@@ -413,5 +624,6 @@ export function useChessGame() {
     clearSelection,
     resetGame,
     syncState,
+    triggerManualCollapse,
   }
 }
