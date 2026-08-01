@@ -57,7 +57,7 @@ export const QuantumStatusPanel: React.FC = () => {
         <span className="text-[9px] text-text-secondary/40 uppercase tracking-wider">
           // Probability Telemetry
         </span>
-        <div className="relative h-24 w-full border border-border/20 bg-[#0c0c0d] flex items-center justify-center p-1">
+        <div className="relative h-24 w-full border border-border/20 bg-surface-deep flex items-center justify-center p-1">
           {/* Horizontal and Vertical grid lines */}
           <div className="absolute inset-0 grid grid-cols-4 grid-rows-4 pointer-events-none opacity-20">
             <div className="border-r border-border/40 w-full h-full" />
@@ -71,16 +71,16 @@ export const QuantumStatusPanel: React.FC = () => {
           {/* SVG Wave Function Curve */}
           <svg className="w-full h-full opacity-60" viewBox="0 0 160 80" fill="none" xmlns="http://www.w3.org/2000/svg">
             {/* Base line */}
-            <line x1="0" y1="70" x2="160" y2="70" stroke="#2a2a2e" strokeWidth="1" />
+            <line x1="0" y1="70" x2="160" y2="70" stroke="var(--border)" strokeWidth="1" />
             {/* Probability curve (Normal distribution-like wave) */}
             <path
               d="M 10 70 Q 40 70 60 40 T 80 15 T 100 45 T 120 70 L 150 70"
-              stroke="#97A88A"
+              stroke="var(--sage)"
               strokeWidth="1.5"
               strokeLinecap="round"
             />
             {/* Measurement cursor */}
-            <line x1="80" y1="10" x2="80" y2="70" stroke="#4a9e9e" strokeWidth="1" strokeDasharray="2 2" />
+            <line x1="80" y1="10" x2="80" y2="70" stroke="var(--accent)" strokeWidth="1" strokeDasharray="2 2" />
           </svg>
 
           {/* Text overlays */}

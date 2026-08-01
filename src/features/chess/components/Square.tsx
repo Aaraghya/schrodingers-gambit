@@ -41,7 +41,7 @@ export const Square: React.FC<SquareProps> = ({
   onClick
 }) => {
   // Editorial palette for a scientific appearance
-  const bgClass = isDark ? 'bg-[#141416]' : 'bg-[#28282b]'
+  const bgClass = isDark ? 'bg-sq-dark' : 'bg-sq-light'
 
   // Build descriptive label for screen readers
   const pieceLabel = piece 

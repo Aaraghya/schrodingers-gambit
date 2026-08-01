@@ -90,7 +90,7 @@ export const GamePage: React.FC = () => {
             <div className="w-full max-w-[460px] flex flex-col gap-4">
               
               {/* Telemetry Status Bar */}
-              <div className="w-full flex items-center justify-between px-4 py-2.5 border border-border/30 bg-[#0c0c0d] font-mono select-none">
+              <div className="w-full flex items-center justify-between px-4 py-2.5 border border-border/30 bg-surface-deep font-mono select-none">
                 <div className="flex items-center gap-2">
                   <span className={`h-1.5 w-1.5 rounded-full ${dotColor} ${dotPulse}`} />
                   <span className="text-[8px] sm:text-[9px] text-text-secondary/50 tracking-[0.15em] uppercase">SYSTEM STATE</span>
@@ -114,7 +114,7 @@ export const GamePage: React.FC = () => {
                       ? 'bg-sage/10 text-sage border-sage hover:bg-sage/20 cursor-pointer'
                       : hasUsedQuantumMove
                         ? 'bg-bg-primary text-text-secondary/25 border-border/10 cursor-not-allowed'
-                        : 'bg-[#0c0c0d] text-sage border-sage/40 hover:border-sage hover:text-text-primary cursor-pointer'
+                        : 'bg-surface-deep text-sage border-sage/40 hover:border-sage hover:text-text-primary cursor-pointer'
                   }`}
                 >
                   {isQuantumModeActive ? '[ Cancel Superposition ]' : '[ Initiate Superposition ]'}

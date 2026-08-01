@@ -84,7 +84,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           y1={y1}
           x2={x2}
           y2={y2}
-          stroke="#97A88A"
+          stroke="var(--sage)"
           strokeWidth="1.5"
           strokeDasharray="4 4"
           opacity="0.38"
@@ -94,7 +94,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   }
 
   return (
-    <div className="relative w-full aspect-square p-6 border border-border/30 bg-[#0c0c0d] shadow-[0_0_32px_rgba(0,0,0,0.65)] select-none">
+    <div className="relative w-full aspect-square p-6 border border-border/30 bg-surface-deep shadow-[0_0_32px_rgba(0,0,0,0.25)] select-none">
       {/* Editorial Ranks and Files Labels */}
       <BoardCoordinates />
 
@@ -163,7 +163,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                 key={type}
                 type="button"
                 onClick={() => onPromoteSelect(type)}
-                className="flex flex-col items-center gap-1.5 p-3 border border-border/30 bg-[#0c0c0d] hover:border-sage text-text-secondary hover:text-text-primary transition-all duration-200 cursor-pointer w-16 outline-none focus-visible:outline-1 focus-visible:outline-sage rounded-none"
+                className="flex flex-col items-center gap-1.5 p-3 border border-border/30 bg-surface-deep hover:border-sage text-text-secondary hover:text-text-primary transition-all duration-200 cursor-pointer w-16 outline-none focus-visible:outline-1 focus-visible:outline-sage rounded-none"
               >
                 <span className="text-lg leading-none">{symbol}</span>
                 <span className="text-[7px] font-mono uppercase tracking-wider">{label}</span>
@@ -200,14 +200,14 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
             <button
               type="button"
               onClick={onResetGame}
-              className="w-full py-2 bg-[#0c0c0d] text-sage hover:text-text-primary border border-sage/40 hover:border-sage text-[10px] font-mono tracking-widest uppercase transition-all duration-200 cursor-pointer rounded-none outline-none focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-sage"
+              className="w-full py-2 bg-surface-deep text-sage hover:text-text-primary border border-sage/40 hover:border-sage text-[10px] font-mono tracking-widest uppercase transition-all duration-200 cursor-pointer rounded-none outline-none focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-sage"
             >
               [ New Game ]
             </button>
             <button
               type="button"
               onClick={onReturnHome}
-              className="w-full py-2 bg-[#0c0c0d] text-text-secondary/70 hover:text-text-primary border border-border/40 hover:border-border text-[9px] font-mono tracking-widest uppercase transition-all duration-200 cursor-pointer rounded-none outline-none focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-border"
+              className="w-full py-2 bg-surface-deep text-text-secondary/70 hover:text-text-primary border border-border/40 hover:border-border text-[9px] font-mono tracking-widest uppercase transition-all duration-200 cursor-pointer rounded-none outline-none focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-border"
             >
               [ Return Home ]
             </button>

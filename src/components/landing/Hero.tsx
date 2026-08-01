@@ -22,7 +22,7 @@ function Hero() {
         </h1>
 
         {/* Tagline: Lora, Bold, White, close to title, reading like a quotation */}
-        <p className="mt-4 font-lora text-base sm:text-lg md:text-xl font-bold text-white italic tracking-wide leading-relaxed select-none">
+        <p className="mt-4 font-lora text-base sm:text-lg md:text-xl font-bold text-text-primary italic tracking-wide leading-relaxed select-none">
           “Every move exists until observed.”
         </p>
 
@@ -32,7 +32,7 @@ function Hero() {
         </div>
 
         {/* Supporting Copy: Lora, Bold, White, smaller, softer opacity */}
-        <p className="font-lora text-xs sm:text-sm font-bold text-white/85 max-w-md tracking-wider leading-relaxed select-none">
+        <p className="font-lora text-xs sm:text-sm font-bold text-text-primary/85 max-w-md tracking-wider leading-relaxed select-none">
           A premium reimagining of classical chess inspired by quantum superposition.
         </p>
       </motion.div>

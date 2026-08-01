@@ -39,7 +39,7 @@ export const OperationalLogPanel: React.FC<OperationalLogPanelProps> = ({
         <span className="text-[9px] text-text-secondary/40 uppercase tracking-wider text-right">
           // Move Registry
         </span>
-        <div className="flex-1 overflow-y-auto border border-border/20 bg-[#0c0c0d] p-3 text-[10px] flex flex-col gap-1.5 text-left min-h-0 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto border border-border/20 bg-surface-deep p-3 text-[10px] flex flex-col gap-1.5 text-left min-h-0 custom-scrollbar">
           <div className="text-text-secondary/25 uppercase tracking-[0.1em] text-[8px] border-b border-border/10 pb-1.5 mb-1 flex justify-between">
             <span>Step</span>
             <span>Observations</span>
