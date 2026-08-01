@@ -131,7 +131,7 @@ The application is structured using a **Decoupled Model-View-Orchestrator** arch
 
 ---
 
-## Technology Stack
+## Tech-Stack
 
 | Domain | Technology | Description |
 | :--- | :--- | :--- |
@@ -190,96 +190,16 @@ schrodingers-gambit/
 
 ---
 
-## Installation & Setup
 
-### Prerequisites
 
-- **Node.js**: v18.0.0 or higher
-- **npm**: v9.0.0 or higher
-
-### Steps
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/Aaraghya/schrodingers-gambit.git
-   cd schrodingers-gambit
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
----
-
-## Running Locally
-
-Start the Vite development server:
-
-```bash
-npm run dev
-```
-
-Open your browser and navigate to `http://localhost:5173`.
-
----
-
-## Build & Verification
-
-### Production Build
-
-Compile TypeScript and build the optimized production bundle:
-
-```bash
-npm run build
-```
-
-### Code Linting
-
-Run Oxlint across all source files:
-
-```bash
-npx oxlint src/
-```
-
-### Automated Verification Suites
-
-Run the full verification suite to validate rules, probability distribution, and state safety:
-
-```bash
-# 1. Classical Rules Audit (40 assertions)
-npx tsx verify-rules-audit.ts
-
-# 2. Coordinator & Collapse Trials (Probability checks)
-npx tsx verify-gameplay-coordinator.ts
-
-# 3. End-to-End Integration Scenarios
-npx tsx verify-gameplay-integration.ts
-```
-
----
 
 ## Screenshots & Visuals
 
-> Visual preview screenshots and recordings of Schrödinger's Gambit should be placed in `public/docs/screenshots/` following these naming conventions:
 
-- `hero-landing.png` — Landing page hero section with atmospheric radial glow.
-- `game-board-initial.png` — Initial game board layout and status bar readout.
-- `superposition-targeting.png` — Initiating superposition and picking destination squares.
-- `quantum-overlay-active.png` — Active superposition showing ghost pieces and SVG coupling line.
-- `state-collapse-log.png` — State collapse resolution recorded in the operational log terminal.
+- `hero-landing.png` <img width="1885" height="842" alt="image" src="https://github.com/user-attachments/assets/33fb6101-93bb-4d17-936a-2fbb9a6ac0e1" />
 
----
+- `game-board-initial.png` <img width="1623" height="869" alt="image" src="https://github.com/user-attachments/assets/00acda1d-9a54-4f42-99d7-c92e6c5bd58c" />
 
-## Future Roadmap (Version 2)
-
-The following concept features are planned for future iterations beyond Version 1:
-
-- [ ] **Multi-Piece Entanglement**: Allowing superpositions of multiple pieces to interact and form dependent quantum graphs.
-- [ ] **Online Peer-to-Peer Multiplayer**: WebRTC or WebSocket implementation for remote play.
-- [ ] **Quantum AI Engine**: Minimax / MCTS algorithm adapted to evaluate probabilistic game trees.
-- [ ] **Custom Audio Asset Packs**: High-definition sampled audio options alongside the procedural synth engine.
-- [ ] **Interactive Wave Function Controls**: Volume sliders, audio mute toggles, and customizable wave telemetry graphs.
 
 ---
 
