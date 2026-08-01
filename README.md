@@ -84,7 +84,6 @@ When a measurement occurs:
 
 ## Features
 
-- **Laboratory Telemetry Interface**: Industrial, dark-mode design system styled with strict unrounded corners, custom HSL color tokens (`--sage`, `--accent`, `--surface`), and crisp monospace typography.
 - **Procedural Web Audio Engine**: Zero external audio asset dependencies. Synthesizes subtle, clean, scientific audio cues (move thud, capture density, quantum split shimmer, collapse resonance, check warning ping, checkmate tone, and UI clicks) using the native Web Audio API.
 - **Dynamic Coupling Vector**: An animated SVG vector line links the two branches of a quantum superposition whenever either branch is hovered.
 - **Operational Log Terminal**: Displays real-time SAN move history paired by round, alongside system status readouts.
