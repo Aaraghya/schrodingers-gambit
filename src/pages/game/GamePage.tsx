@@ -7,6 +7,7 @@ import { ChessBoard } from '../../features/chess/components/ChessBoard'
 import QuantumStatusPanel from '../../features/chess/components/QuantumStatusPanel'
 import OperationalLogPanel from '../../features/chess/components/OperationalLogPanel'
 import { useChessGame } from '../../features/hooks/useChessGame'
+import { audioManager } from '../../features/audio/audioManager'
 
 export const GamePage: React.FC = () => {
   const navigate = useNavigate()
@@ -103,23 +104,23 @@ export const GamePage: React.FC = () => {
               </div>
 
               {/* Quantum Move Button */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1.5">
                 <button
                   type="button"
-                  onClick={toggleQuantumMode}
+                  onClick={() => { audioManager.play('uiClick'); toggleQuantumMode() }}
                   disabled={!isQuantumModeActive && hasUsedQuantumMove}
-                  className={`w-full py-2 border font-mono text-[10px] tracking-widest uppercase transition-all duration-200 cursor-pointer select-none rounded-none outline-none ${
+                  className={`w-full py-2 border font-mono text-[10px] tracking-widest uppercase transition-all duration-150 select-none rounded-none outline-none focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-sage ${
                     isQuantumModeActive
-                      ? 'bg-sage/10 text-sage border-sage hover:bg-sage/20'
+                      ? 'bg-sage/10 text-sage border-sage hover:bg-sage/20 cursor-pointer'
                       : hasUsedQuantumMove
-                        ? 'bg-bg-primary text-text-secondary/30 border-border/10 cursor-not-allowed'
-                        : 'bg-[#0c0c0d] text-sage border-sage/40 hover:border-sage hover:text-text-primary'
+                        ? 'bg-bg-primary text-text-secondary/25 border-border/10 cursor-not-allowed'
+                        : 'bg-[#0c0c0d] text-sage border-sage/40 hover:border-sage hover:text-text-primary cursor-pointer'
                   }`}
                 >
                   {isQuantumModeActive ? '[ Cancel Superposition ]' : '[ Initiate Superposition ]'}
                 </button>
                 {quantumModeError && (
-                  <span className="text-[9px] font-mono text-text-secondary/50 tracking-wider text-center uppercase">
+                  <span className="text-[9px] font-mono text-text-secondary/45 tracking-wider text-center uppercase">
                     // Activation Failed: {quantumModeError}
                   </span>
                 )}

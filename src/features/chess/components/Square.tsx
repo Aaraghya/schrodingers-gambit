@@ -56,13 +56,13 @@ export const Square: React.FC<SquareProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       aria-label={ariaLabel}
-      className={`relative w-full aspect-square flex items-center justify-center transition-colors duration-200 outline-none focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-sage focus-visible:z-10 ${bgClass} group rounded-none cursor-pointer overflow-hidden`}
+      className={`relative w-full aspect-square flex items-center justify-center transition-colors duration-150 outline-none focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-sage focus-visible:z-10 ${bgClass} group rounded-none cursor-pointer overflow-hidden`}
     >
       {/* Visual square border for scientific instrument details */}
       <span className="absolute inset-0 border border-border/10 opacity-30 pointer-events-none" />
 
       {/* Premium subtle hover overlay */}
-      <span className="absolute inset-0 bg-white/0 hover:bg-white/5 transition-colors duration-150 pointer-events-none" />
+      <span className="absolute inset-0 bg-white/0 hover:bg-white/[0.04] transition-colors duration-150 pointer-events-none" />
 
       {/* Last Move Tint Overlay */}
       {isLastMovePart && (
@@ -96,12 +96,12 @@ export const Square: React.FC<SquareProps> = ({
 
       {/* Subtle background highlight for linked hovered branches */}
       {isQuantumHovered && (
-        <span className="absolute inset-0 bg-sage/[0.04] border border-sage/30 z-10 pointer-events-none transition-colors duration-150" />
+        <span className="absolute inset-0 bg-sage/[0.05] border border-sage/20 z-10 pointer-events-none transition-colors duration-150" />
       )}
 
       {/* Tiny quantum identifier (Ψ) in the corner of the squares */}
       {piece?.isQuantum && (
-        <span className="absolute bottom-1 right-1.5 text-[8px] font-mono text-sage/70 select-none z-10">
+        <span className="absolute bottom-[3px] right-[5px] text-[7px] font-mono text-sage/60 select-none z-10 leading-none">
           Ψ
         </span>
       )}
@@ -110,17 +110,17 @@ export const Square: React.FC<SquareProps> = ({
       {isLegalDestination && (
         piece ? (
           // Capture target: subtle outer ring around the piece
-          <span className="absolute inset-1.5 border border-sage/50 rounded-full pointer-events-none z-10" />
+          <span className="absolute inset-[5px] border border-sage/40 rounded-full pointer-events-none z-10" />
         ) : (
           // Empty cell target: small centered dot
-          <span className="w-2 h-2 rounded-full bg-sage/60 pointer-events-none z-10" />
+          <span className="w-[7px] h-[7px] rounded-full bg-sage/55 pointer-events-none z-10" />
         )
       )}
 
       {/* Render the piece if present */}
       {piece && (
-        <div className={`w-[78%] h-[78%] transition-all duration-300 group-hover:scale-[1.03] ${
-          piece.isQuantum ? 'opacity-50 blur-[0.5px] animate-quantum-fade-in' : ''
+        <div className={`w-[78%] h-[78%] transition-all duration-200 group-hover:scale-[1.03] ${
+          piece.isQuantum ? 'opacity-[0.45] blur-[0.5px] animate-quantum-fade-in' : ''
         }`}>
           <Piece type={piece.type} color={piece.color} />
         </div>

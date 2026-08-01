@@ -4,6 +4,7 @@ import { QuantumEngine } from '../quantum/engine/quantumEngine'
 import { getMergedBoardState } from '../quantum/utils/quantumUtils'
 import type { BoardState } from '../chess/types'
 import type { QuantumOverlay } from '../quantum/types/quantum'
+import { audioManager } from '../audio/audioManager'
 
 interface MoveRecord {
   from: string
@@ -255,6 +256,18 @@ export function useChessGame() {
       // Normal move
       const success = engine.move(from, to, promotion)
       if (success) {
+        // Audio: capture takes priority over move
+        if (engine.getLastMoveWasCapture()) {
+          audioManager.play('capture')
+        } else {
+          audioManager.play('move')
+        }
+        // Audio: check/checkmate fire after the board has resolved
+        if (engine.isCheckmate()) {
+          audioManager.play('checkmate')
+        } else if (engine.inCheck()) {
+          audioManager.play('check')
+        }
         moveHistoryRef.current.push({ from, to, promotion })
         setLastMove({ from, to })
         clearSelection()
@@ -287,10 +300,21 @@ export function useChessGame() {
           }
           return move
         })
+        audioManager.play('collapse')
 
         // Attempt the requested move from the actual collapsed location
         const success = engine.move(collapsedSquare, to, promotion)
         if (success) {
+          if (engine.getLastMoveWasCapture()) {
+            audioManager.play('capture')
+          } else {
+            audioManager.play('move')
+          }
+          if (engine.isCheckmate()) {
+            audioManager.play('checkmate')
+          } else if (engine.inCheck()) {
+            audioManager.play('check')
+          }
           moveHistoryRef.current.push({ from: collapsedSquare, to, promotion })
           setLastMove({ from: collapsedSquare, to })
         }
@@ -311,6 +335,7 @@ export function useChessGame() {
           }
           return move
         })
+        audioManager.play('collapse')
 
         // Capture only succeeds if collapse matches targeted branch, or if it is an en passant capture
         const isEnPassant =
@@ -322,6 +347,12 @@ export function useChessGame() {
         if (collapsedSquare === to || isEnPassant) {
           success = engine.move(from, to, promotion)
           if (success) {
+            audioManager.play('capture')
+            if (engine.isCheckmate()) {
+              audioManager.play('checkmate')
+            } else if (engine.inCheck()) {
+              audioManager.play('check')
+            }
             moveHistoryRef.current.push({ from, to, promotion })
             setLastMove({ from, to })
           }
@@ -337,6 +368,16 @@ export function useChessGame() {
     // Overlay remains active.
     const success = engine.move(from, to, promotion)
     if (success) {
+      if (engine.getLastMoveWasCapture()) {
+        audioManager.play('capture')
+      } else {
+        audioManager.play('move')
+      }
+      if (engine.isCheckmate()) {
+        audioManager.play('checkmate')
+      } else if (engine.inCheck()) {
+        audioManager.play('check')
+      }
       moveHistoryRef.current.push({ from, to, promotion })
       setLastMove({ from, to })
       clearSelection()
@@ -449,6 +490,7 @@ export function useChessGame() {
     // Execute standard classical move to targetA in classical engine to advance the turn
     const success = engine.move(selected, targetA)
     if (success) {
+      audioManager.play('quantumSplit')
       moveHistoryRef.current.push({ from: selected, to: targetA })
       setLastMove({ from: selected, to: targetA })
     }
@@ -589,6 +631,7 @@ export function useChessGame() {
         }
         return move
       })
+      audioManager.play('collapse')
     }
     clearSelection()
     syncState()

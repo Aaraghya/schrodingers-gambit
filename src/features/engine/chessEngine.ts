@@ -150,4 +150,15 @@ export class ChessEngine {
   public isGameOver(): boolean {
     return this.instance.isGameOver()
   }
+
+  /**
+   * Returns true if the most recently executed move resulted in a capture.
+   * Used solely by the audio layer to select the correct sound cue.
+   */
+  public getLastMoveWasCapture(): boolean {
+    const moves = this.instance.history({ verbose: true })
+    if (moves.length === 0) return false
+    return moves[moves.length - 1].captured !== undefined
+  }
 }
+

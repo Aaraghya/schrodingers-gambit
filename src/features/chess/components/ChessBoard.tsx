@@ -78,7 +78,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
     const y2 = `${(idxB.row + 0.5) * 12.5}%`
 
     return (
-      <svg className="absolute inset-0 pointer-events-none z-20 w-full h-full">
+      <svg className="absolute inset-0 pointer-events-none z-20 w-full h-full animate-quantum-connector">
         <line
           x1={x1}
           y1={y1}
@@ -87,7 +87,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           stroke="#97A88A"
           strokeWidth="1.5"
           strokeDasharray="4 4"
-          className="opacity-40 transition-opacity duration-200"
+          opacity="0.38"
         />
       </svg>
     )
